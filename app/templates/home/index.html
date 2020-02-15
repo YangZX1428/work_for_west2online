@@ -1,0 +1,107 @@
+{% extends "home/home.html"%}<!--继承home文件夹下的home.html-->
+
+{% block content %}<!--主页面(第一页内容)-->
+
+<script type="text/javascript">
+    window.onload = function(){
+    {% for j in range(start_page-1,dest_page)%}
+    var a = document.createElement('a');
+    a.setAttribute("href","{{url_for('home.play',video_id=j+1,username='not_login')}}");
+    a.setAttribute("target","_blank")
+    var img = document.createElement('img');
+    {% if face_list[j] == "None"%}
+        img.setAttribute("src","{{url_for('static',filename='video_face/default.jpg')}}");
+    {% else %}
+        img.setAttribute("src","{{url_for('static',filename='video_face/'+face_list[j])}}");
+    {% endif %}
+    img.setAttribute("alt","#");
+    var div = document.createElement('div');
+    div.setAttribute("class","info");
+    var p1 = document.createElement('p');
+    p1.setAttribute("class","title");
+    p1.innerHTML = {{title_list[j]|tojson}};
+    var p2 = document.createElement('p');
+    p2.innerHTML = "点赞数:"+{{goodnum_list[j]|tojson}};
+    p2.setAttribute("class","author");
+    var p3 = document.createElement('p');
+    p3.setAttribute("class","play");
+    p3.innerHTML = "弹幕:"+{{danmaku_list[j]|tojson}};
+    var li = document.createElement('li');
+    var ul = document.getElementById('banner-ul');
+    div.appendChild(p1);
+    div.appendChild(p2);
+    div.appendChild(p3);
+    a.appendChild(img);
+    a.appendChild(div);
+    li.appendChild(a);
+    ul.appendChild(li);
+    {% endfor %}
+
+    $('.search-history').remove();
+    }
+
+</script>
+<style>
+    .change-pre-page{
+        height:25px;
+        width:60px;
+        background-color:#fb7299;
+        position:absolute;
+        top:0px;
+        left:0px;
+        font-size:20px;
+        display:inline;
+
+        border-radius:4px;
+        border:2px solid #fb7299;
+        color:white;
+
+    }
+    .change-post-page{
+    height:25px;
+        width:60px;
+        position:absolute;
+        top:0px;
+        left:460px;
+        font-size:20px;
+        display:inline;
+        background-color:#fb7299;
+        border-radius:4px;
+        border:2px solid #fb7299;
+        color:white;
+    }
+    #change-page{
+    height:100px;
+    width:520px;
+    position:relative;
+    top:250px;
+    left:460px;
+    }
+    .now-page{
+    height:25px;
+    width:150px;
+    font-size:20px;
+    position:absolute;
+    left:200px;
+    }
+
+</style>
+<div class="banner-list fr">
+    <ul id="banner-ul">
+    </ul>
+</div>
+<div id="change-page">
+    <p class="now-page">第{{spage}}页/共{{page_num}}页</p>
+    {% if start_page == 1 %}
+    <a href="#" onclick="alert('当前已是第一页!');" class="change-pre-page">上一页</a>
+    <a href="{{url_for('home.mainpage',page=spage+1)}}" class="change-post-page">下一页</a>
+    {% elif dest_page == total_num %}
+    <a href="{{url_for('home.mainpage',page=spage-1)}}" class="change-pre-page">上一页</a>
+    <a href="#" onclick="alert('当前已是最后一页!');" class="change-post-page">下一页</a>
+    {% else %}
+    <a href="{{url_for('home.mainpage',page=spage-1)}}" class="change-pre-page"><span>上一页</span></a>
+    <a href="{{url_for('home.mainpage',page=spage+1)}}" class="change-post-page"><span>下一页</span></a>
+    {% endif %}
+
+</div>
+{% endblock %}

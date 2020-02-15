@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录日志</title>
+</head>
+<style>
+    table{
+    border:5px solid #fb7299;
+    }
+    #get-back{
+    width:80px;
+    height:30px;
+    font-size:25px;
+    color:white;
+    background:#fb7299;
+    border:3px solid #fb7299;
+    border-radius:5px;
+    position:relative;
+    top:-300px;
+    text-decoration:none;
+    }
+</style>
+<script type="text/javascript">
+    window.onload = function(){
+    {% for j in range(0,log_num)%}
+    var tbl = document.getElementById('login-table');
+    var tr = document.createElement('tr');
+    var td1 = document.createElement('td');
+    var td2 = document.createElement('td');
+    var td3 = document.createElement('td')
+    td1.innerHTML = {{admin_name[j]|tojson}};
+    td2.innerHTML = {{add_time[j]|tojson}};
+    td3.innerHTML = {{content[j]|tojson}};
+    td1.setAttribute("align","center");
+    td2.setAttribute("align","center");
+    td3.setAttribute("align","center");
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tr.appendChild(td3);
+    tbl.appendChild(tr);
+    {% endfor %}
+
+
+    }
+</script>
+<p align="center" style="position:relative;top:-50px;font-size:30px;color:red;">欢迎,{{username}}！</p>
+<body topmargin="100px;">
+    <table border="1" width="1200px" align="center" id="login-table">
+    <tr>
+        <td align="center">
+            管理员
+        </td>
+        <td align="center">操作时间</td>
+        <td align="center">操作内容</td>
+    </tr>
+
+    </table>
+    <a href="{{url_for('admin.mainpage',username = username,page=1,code=200)}}" id="get-back">返回主站</a>
+</body>
+</html>

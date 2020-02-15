@@ -1,0 +1,193 @@
+{% extends "home/tag_home.html"%}
+{% block title %}
+<title>{{video_title}}</title>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            $('.btn').click(function(){     //搜索按钮点击事件
+                var key = $('.text').val();     //获取搜索框内容那个
+                var data = JSON.stringify({     //传入key
+                'key': key
+                });
+                $.ajax({                        //ajax开始
+                url:"{{url_for('home.search_handler',username='not_login')}}",
+                data:data,
+                type:'post',
+                success:function(data){
+                window.location.href = data;
+                },
+                });                             //ajax结束
+            });
+            {% for j in range(0,video_num)%}
+            var a = document.createElement('a');
+            a.setAttribute("href","{{url_for('home.play',video_id=j+1,username='not_login')}}");
+            a.setAttribute("target","_blank")
+            var img = document.createElement('img');
+            {% if face_list[j] == "None"%}
+                img.setAttribute("src","{{url_for('static',filename='video_face/default.jpg')}}");
+            {% else %}
+                img.setAttribute("src","{{url_for('static',filename='video_face/'+face_list[j])}}");
+            {% endif %}
+            img.setAttribute("alt","#");
+            var div = document.createElement('div');
+            div.setAttribute("class","info");
+            var p1 = document.createElement('p');
+            p1.setAttribute("class","title");
+            p1.innerHTML = {{title_list[j]|tojson}};
+            var p2 = document.createElement('p');
+            p2.innerHTML = "点赞数:"+{{goodnum_list[j]|tojson}};
+            p2.setAttribute("class","author");
+            var p3 = document.createElement('p');
+            p3.setAttribute("class","play");
+            p3.innerHTML = "弹幕:"+{{danmaku_list[j]|tojson}};
+            var li = document.createElement('li');
+            li.setAttribute("class","video-li");
+            var ul = document.getElementById('banner-ul');
+            div.appendChild(p1);
+            div.appendChild(p2);
+            div.appendChild(p3);
+            a.appendChild(img);
+            a.appendChild(div);
+            li.appendChild(a);
+            ul.appendChild(li);
+            {% endfor %}
+
+            $('.search-history').remove();
+
+
+        })
+    </script>
+{% endblock %}
+
+
+{% block mainpage%}
+<a href="{{url_for('home.mainpage',page=1)}}">主站</a>
+{% endblock %}
+
+
+{% block userinfo %}
+<a href="{{url_for('home.login',code=0)}}">登录</a>
+<span></span>
+<a href="{{url_for('home.regist')}}">注册</a>
+{% endblock %}
+
+
+{% block create %}
+<a href="{{url_for('home.login',code=101)}}" class="link">投 稿</a>
+{% endblock %}
+
+
+{% block rank %}
+<a class="search-rank" href="{{url_for('home.rank',username='not_login')}}">排行榜</a>
+{% endblock %}
+
+
+
+{% block list %}
+<li class="item item-home">
+        <a href="{{url_for('home.mainpage',page=1)}}" class="link">首页</a>
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username='not_login',tag_id = 1)}}" class="link">
+
+        动画
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username='not_login',tag_id = 2)}}" class="link">
+
+        番剧
+    </a>
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username='not_login',tag_id = 3)}}" class="link">
+        音乐
+    </a>
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username='not_login',tag_id = 4)}}" class="link">
+
+        舞蹈
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username='not_login',tag_id = 5)}}" class="link">
+
+        游戏
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username='not_login',tag_id = 6)}}" class="link">
+
+        科技
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username='not_login',tag_id = 7)}}" class="link">
+
+        生活
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username='not_login',tag_id = 8)}}" class="link">
+
+        鬼畜
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username='not_login',tag_id = 9)}}" class="link">
+
+        时尚
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username='not_login',tag_id = 12)}}" class="link">
+
+        广告
+    </a>
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username='not_login',tag_id = 10)}}" class="link">
+
+        娱乐
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username='not_login',tag_id = 11)}}" class="link">
+
+        影视
+    </a>
+
+</li>
+{% endblock %}
+
+
+
+
+{% block content %}
+<div style="height:1000px;width:805px;margin-left:270px;margin-top:20px;">
+    <div style="height:1000px;width:275px;float:left;">
+        <p style="font-size:30px;color:#fb7299;">排行榜-></p>
+    </div>
+    <div style="height:1000px;width:5px;float:left;background:#fb7299;"></div>
+    <div class="banner-list fr" style="height:1000px;width:520px;float:left;">
+        <div style="height:100px;width:520px;display:inline-block;">
+            <p style="font-size:30px;">按点赞量排序</p>
+            <hr style="background:#fb7299;border:1px solid #fb7299;" size="4">
+        </div>
+        <div style="height:900px;width:520px;display:inline-block;">
+        <ul id="banner-ul">
+        </ul>
+        </div>
+    </div>
+    <div style="height:1000px;width:5px;float:left;background:#fb7299;"></div>
+</div>
+{% endblock %}

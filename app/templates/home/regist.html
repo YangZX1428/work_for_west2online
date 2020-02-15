@@ -1,0 +1,80 @@
+{% extends "home/log-and-regfa.html"%}
+{% block title %}
+<title>注册界面</title>
+{% endblock %}
+{% block content %}
+<style>
+        input{
+                border: 1px solid #ccc;
+                padding: 7px 0px;
+                border-radius: 3px;
+                padding-left:5px;
+                -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+                box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+                -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+                -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+                transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s
+                height:50px;
+                width:300px;
+            }
+            input:focus{
+                    border-color: #66afe9;
+                    outline: 0;
+                    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+                    box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)
+            }
+            h2{font-size:25px;
+            position:relative;
+            left:230px;}
+            .regp1,.regn,.regp2,.rege,.regsub{
+            position:relative;
+            left:230px;
+
+
+            }
+
+</style>
+<img src="{{url_for('static',filename='bhtml/images/timg.jpg')}}" height="500px" width="750px" align="left">
+<form method="post">
+    {{regist_form.csrf_token}}
+    <hr>
+    <br>
+    <h2>{{regist_form.name.label}}</h2>
+    <br>
+    {{regist_form.name}}
+
+
+
+    <h2>{{regist_form.password1.label}}</h2>
+    <br>
+
+    {{regist_form.password1}}
+
+
+
+    <h2>{{regist_form.password2.label}}</h2>
+    <br>
+
+    {{regist_form.password2}}
+
+    <h2>{{regist_form.email.label}}</h2>
+    <br>
+    {{regist_form.email}}
+
+
+    {% for e in regist_form.password2.errors %}
+    <h2 style="color:red">{{e}}</h2>
+    {% endfor %}
+    <br>
+    <hr>
+    <br>
+    {{regist_form.submit}}
+    {% if error %}
+    <h2 style="color:red">{{error}}</h2>
+    {% endif %}
+    {% for f in get_flashed_messages() %}
+    <h2 style="color:red">{{f}}</h2>
+    {% endfor %}
+
+</form>
+{% endblock %}

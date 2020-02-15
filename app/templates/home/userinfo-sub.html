@@ -1,0 +1,183 @@
+{% extends "home/userinfo.html "%}
+{% block mainpage%}
+<a href="{{url_for('home.user',name=username,id = userid,code=200,page=1)}}">主站</a>
+{% endblock %}
+{% block create %}
+<a href="{{url_for('home.create',username = username,id = userid)}}" class="link">投 稿</a>
+{% endblock %}
+{% block rank %}
+<a class="search-rank" href="{{url_for('home.rank',username=username)}}">排行榜</a>
+{% endblock %}
+{% block content %}
+<style>
+    .info-li{
+    text-align:center;
+    width:200px;
+    height:70px;
+    line-height:65px;
+    border:1px solid  #999999 ;
+    background-color:#00a1d7!important;
+
+    }
+    .change-li,.favorite-li{
+    text-align:center;
+    width:200px;
+    height:70px;
+    line-height:65px;
+    border:1px solid  #999999 ;
+
+    }
+    p{
+    font-size:30px;
+    font-family:微软雅黑;
+
+    }
+    .favorite-li:hover{background-color:#A9A9A9;}
+    .change-li:hover{background-color:#A9A9A9;}
+    li{
+    font-size:30px;
+    position:relative;
+    left:200px;
+    align:left;
+
+    }
+    .info-content{position:relative;
+          top:-200px;
+          left:450px;
+          height:800px;
+          width:1000px;
+          }
+    .blue-symbol{
+        float: left;
+        width: 4px;
+        height: 20px;
+        background-color: #00a1d6;
+        border-radius: 4px;}
+    .user-face{
+        position:relative;
+        vertical-align:middle;
+        height:200px;
+        width:200px;
+        left:300px;
+        top:-200px;
+    }
+    .refer,.info-face{
+    position:relative;
+    left:300px;
+    top:150px;
+    }
+    hr{position:relative;
+       top:150px;
+    }
+    .name-part,.email-part,.info-part,.face-part{
+    position:relative;
+    left:-200px;
+    font-size:30px;
+    font-family:微软雅黑;
+    color:#00a1d6;
+    }
+    textarea{
+    height:60px;
+    width:500px;
+    position:relative;
+    top:50px;
+    left:-150px;
+    resize:none;
+    border-radius:6px;
+    border:3px solid #000;
+    font-size:20px;
+    }
+    #submit{
+        height:60px;
+        width:120px;
+        font-size:30px;
+        color:white;
+        background-color:#fb7299;
+        border-radius:10px;
+        border:1px solid #fb7299;
+        position:relative;
+        left:420px;
+        top:150px;
+    }
+
+
+
+
+
+
+
+
+
+</style>
+<head>
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
+</head>
+<script type="text/javascript">
+    $(function(){
+    $('.info-name').val("{{username}}");
+    $('.info-info').val("{{info}}");
+    })
+     $(document).ready(function () {
+     if(location.href.indexOf("#reloaded")==-1){
+        location.href=location.href+"#reloaded";
+        location.reload();
+    }
+    {% if file_error == 1%}
+    alert("请上传格式正确的文件!");
+    {% endif %}
+
+    {% if key_num == 0%}
+    $('.search-history').remove()
+    {% endif %}
+
+
+    //添加历史记录
+    {% for i in range(0,key_num)%}
+    var l = document.getElementById('list');
+    var a = document.createElement('a');
+    a.setAttribute("href","{{url_for('home.search',username=username,key = new_list[i])}}");
+    a.innerHTML = {{new_list[i]|tojson}};
+    l.appendChild(a);
+    {% endfor %}
+
+
+ })
+
+
+</script>
+<div class="info-content">
+    <p style="font-size:20px;color:#00a1d6">
+        <span class="blue-symbol"></span>&nbsp;我的信息
+    </p>
+    <br><br><br><br>
+    <form method="post" enctype="multipart/form-data">
+        {{form.csrf_token}}
+        <ul>
+
+            <li><span class="name-part">用户名</span>&emsp;{{username}}</li>
+            <br><br><br>
+            <li><span class="email-part">邮箱</span>&nbsp;{{email}}</li>
+            <br><br><br>
+            <li><span class="info-part">个人简介</span>&nbsp;{{form.info}}</li>
+            <br><br><br><br><br><br>
+            <li><span class="face-part">我的头像</span>&nbsp;</li>
+            <br><br><br>
+
+            <p>&nbsp;</p>
+            <p class="refer" style="font-size:15px;color:red;">如需换头像，请选择文件(仅限上传jpg,png文件)</p><br>
+            {{form.face}}
+            <hr>
+            {{form.submit}}
+            {% for m in get_flashed_messages() %}
+            <p style>{{m}}</p>
+            {% endfor %}
+        </ul>
+    </form>
+    {% if hasface%}
+    <img class="user-face" src="{{url_for('static',filename='faces/'+username+'.jpg')}}">
+    {% else %}
+    <img class="user-face" src="{{url_for('static',filename='faces/default.jpg')}}">
+    {% endif %}
+</div>
+
+{% endblock %}

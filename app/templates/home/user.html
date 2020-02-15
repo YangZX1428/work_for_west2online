@@ -1,0 +1,342 @@
+{% extends "home/userhome.html"%}
+{% block title %}
+<title>首页</title>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script type="text/javascript">
+        $(function(){
+            $('.btn').click(function(){     //搜索按钮点击事件
+                var key = $('.text').val();     //获取搜索框内容那个
+                var data = JSON.stringify({     //传入key
+                'key': key
+                });
+                $.ajax({                        //ajax开始
+                url:"{{url_for('home.search_handler',username=username)}}",
+                data:data,
+                type:'post',
+                success:function(data){
+                window.location.href = data;
+                },
+                });                             //ajax结束
+            });
+
+
+            //添加历史记录
+            {% for i in range(0,key_num)%}
+            var l = document.getElementById('list');
+            var a = document.createElement('a');
+            a.setAttribute("href","{{url_for('home.search',username=username,key = new_list[i])}}");
+            a.innerHTML = {{new_list[i]|tojson}};
+            l.appendChild(a);
+            {% endfor %}
+
+        })
+        function fun1(obj){
+        var pic = $(obj);
+        var now_jpeg = pic.attr("id");
+        //document.writeln(now_jpeg);
+        switch(now_jpeg)
+        {
+            case 'pic-1':
+                $('#pic-2').attr("class","no");
+                $('#pic-3').attr("class","no");
+                $('#pic-4').attr("class","no");
+                document.getElementById('pic-text').innerHTML = "come to video 1";
+                document.getElementById('pic-1').setAttribute("class",'cur');
+                document.getElementById('pic-play').setAttribute("href","{{url_for('home.play',video_id=1,username=secret_name)}}");
+                document.getElementById('pic-img').setAttribute("src","{{url_for('static',filename='bhtml/images/cont/slider_img1.png')}}");
+                break;
+            case 'pic-2':
+                $('#pic-1').attr("class","no");
+                $('#pic-3').attr("class","no");
+                $('#pic-4').attr("class","no");
+                document.getElementById('pic-text').innerHTML = "come to video 2";
+                document.getElementById('pic-2').setAttribute("class",'cur');
+                document.getElementById('pic-play').setAttribute("href","{{url_for('home.play',video_id=2,username=secret_name)}}");
+                document.getElementById('pic-img').setAttribute("src","{{url_for('static',filename='bhtml/images/cont/slider_img2.png')}}");
+                break;
+            case 'pic-3':
+                $('#pic-1').attr("class","no");
+                $('#pic-2').attr("class","no");
+                $('#pic-4').attr("class","no");
+                document.getElementById('pic-text').innerHTML = "come to video 3";
+                document.getElementById('pic-3').setAttribute("class",'cur');
+                document.getElementById('pic-play').setAttribute("href","{{url_for('home.play',video_id=3,username=secret_name)}}");
+                document.getElementById('pic-img').setAttribute("src","{{url_for('static',filename='bhtml/images/cont/slider_img3.png')}}");
+                break;
+            case 'pic-4':
+                $('#pic-1').attr("class","no");
+                $('#pic-2').attr("class","no");
+                $('#pic-3').attr("class","no");
+                document.getElementById('pic-text').innerHTML = "come to video 4"
+                document.getElementById('pic-4').setAttribute("class",'cur');
+                document.getElementById('pic-play').setAttribute("href","{{url_for('home.play',video_id=4,username=secret_name)}}");
+                document.getElementById('pic-img').setAttribute("src","{{url_for('static',filename='bhtml/images/cont/slider_img4.png')}}");
+
+        }
+
+    }
+
+
+</script>
+{% endblock %}
+
+
+{% block mainpage%}
+<a href="{{url_for('home.user',name=username,id = userid,code=200,page=1)}}">主站</a>
+{% endblock %}
+
+
+{% block create %}
+<a href="{{url_for('home.create',username = username,id = userid)}}" class="link">投 稿</a>
+{% endblock %}
+
+
+{% block rank %}
+<a class="search-rank" href="{{url_for('home.rank',username=username)}}">排行榜</a>
+{% endblock %}
+
+
+{% block list %}
+<li class="item item-home">
+    <a href="{{url_for('home.user',id = userid,name = username,code=200,page=1)}}" class="link">首页</a>
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username=username,tag_id = 1)}}" class="link">
+
+        动画
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username=username,tag_id = 2)}}" class="link">
+
+        番剧
+    </a>
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username=username,tag_id = 3)}}" class="link">
+        音乐
+    </a>
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username=username,tag_id = 4)}}" class="link">
+
+        舞蹈
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username=username,tag_id = 5)}}" class="link">
+
+        游戏
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username=username,tag_id = 6)}}" class="link">
+
+        科技
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username=username,tag_id = 7)}}" class="link">
+
+        生活
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username=username,tag_id = 8)}}" class="link">
+
+        鬼畜
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username=username,tag_id = 9)}}" class="link">
+
+        时尚
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username=username,tag_id = 12)}}" class="link">
+
+        广告
+    </a>
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username=username,tag_id = 10)}}" class="link">
+
+        娱乐
+    </a>
+
+</li>
+<li class="item">
+    <a href="{{url_for('home.tag_show',username=username,tag_id = 11)}}" class="link">
+
+        影视
+    </a>
+
+</li>
+{% endblock %}
+
+
+{% block admin%}
+{% if is_admin==0 %}
+<a href="#" class="link"
+   style="color:white;font-size:25px;border:2px solid #fb7299;background:#fb7299;border-radius:5px;height:40px;width:170px;"
+   onclick="alert('您不是管理员!');">后台管理入口</a>
+{% else %}
+<a href="{{url_for('admin.mainpage',username = username,userid = userid,page=1,code=200)}}" class="link"
+   style="color:white;font-size:25px;border:2px solid #fb7299;background:#fb7299;border-radius:5px;height:40px;width:170px;">后台管理入口</a>
+{% endif %}
+{% endblock %}
+
+
+{% block img%}
+<div class="slider-img">
+    <a href="{{url_for('home.play',username=secret_name,video_id=1)}}" slider-title="pic1" id="pic-play"><img
+            id="pic-img" src="{{url_for('static',filename='bhtml/images/cont/slider_img1.png')}}" alt="#"></a>
+</div>
+{% endblock %}
+
+
+{% block pic %}
+<div class="slider-title"><p id="pic-text">come to video 1</p></div>
+<div class="slider-btn">
+    <span id="pic-1" name="pic" class="cur" onclick="fun1(this)"></span>
+    <span id="pic-2" name="pic" onclick="fun1(this)"></span>
+    <span id="pic-3" name="pic" onclick="fun1(this)"></span>
+    <span id="pic-4" name="pic" onclick="fun1(this)"></span>
+</div>
+
+
+{% endblock %}
+
+
+{% block userinfo %}
+<script type="text/javascript">
+    window.onload = function(){
+
+    {% for j in range(start_page-1,dest_page)%}
+    var a = document.createElement('a');
+    a.setAttribute("href","{{url_for('home.play',video_id=j+1,username=secret_name)}}");
+    a.setAttribute("target","_blank")
+    var img = document.createElement('img');
+    {% if face_list[j] == "None"%}
+        img.setAttribute("src","{{url_for('static',filename='video_face/default.jpg')}}");
+    {% else %}
+        img.setAttribute("src","{{url_for('static',filename='video_face/'+face_list[j])}}");
+    {% endif %}
+    img.setAttribute("alt","#");
+    var div = document.createElement('div');
+    div.setAttribute("class","info");
+    var p1 = document.createElement('p');
+    p1.setAttribute("class","title");
+    p1.innerHTML = {{title_list[j]|tojson}};
+    var p2 = document.createElement('p');
+    p2.innerHTML = "点赞数:"+{{goodnum_list[j]|tojson}};
+    p2.setAttribute("class","author");
+    var p3 = document.createElement('p');
+    p3.setAttribute("class","play");
+    p3.innerHTML = "弹幕:"+{{danmaku_list[j]|tojson}};
+    var li = document.createElement('li');
+    var ul = document.getElementById('banner-ul');
+    div.appendChild(p1);
+    div.appendChild(p2);
+    div.appendChild(p3);
+    a.appendChild(img);
+    a.appendChild(div);
+    li.appendChild(a);
+    ul.appendChild(li);
+    {% endfor %}
+    {% if code == 304%}
+    alert("保存成功!");
+    {% endif %}
+    {% if code == 99%}
+    alert("提交成功!")
+    {% endif %}
+    }
+
+
+
+
+</script>
+<style>
+    .change-pre-page{
+        height:25px;
+        width:60px;
+        background-color:#fb7299;
+        position:absolute;
+        top:0px;
+        left:0px;
+        font-size:20px;
+        display:inline;
+
+        border-radius:4px;
+        border:2px solid #fb7299;
+        color:white;
+
+    }
+    .change-post-page{
+    height:25px;
+        width:60px;
+        position:absolute;
+        top:0px;
+        left:460px;
+        font-size:20px;
+        display:inline;
+        background-color:#fb7299;
+        border-radius:4px;
+        border:2px solid #fb7299;
+        color:white;
+    }
+    #change-page{
+    height:100px;
+    width:520px;
+    position:relative;
+    top:250px;
+    left:460px;
+    }
+    .now-page{
+    height:25px;
+    width:150px;
+    font-size:20px;
+    position:absolute;
+    left:200px;
+    }
+    #welcome{
+    font-size:20px;
+    font-family:arial;}
+
+
+
+</style>
+<a id="welcome">欢迎回来,{{username}}!</a>
+<a href="{{url_for('home.userinfo',username=username)}}">个人中心</a>
+<span></span>
+<a href="{{url_for('home.mainpage',page=1)}}">注销</a>
+{% endblock %}
+{%block content%}
+<div class="banner-list fr">
+    <ul id="banner-ul">
+    </ul>
+</div>
+<div id="change-page">
+    <p class="now-page">第{{spage}}页/共{{page_num}}页</p>
+    {% if start_page == 1 %}
+    <a href="#" onclick="alert('当前已是第一页!');" class="change-pre-page">上一页</a>
+    <a href="{{url_for('home.user',id = userid,name = username,code=200,page=spage+1)}}"
+       class="change-post-page">下一页</a>
+    {% elif dest_page == total_num %}
+    <a href="{{url_for('home.user',id = userid,name = username,code=200,page=spage-1)}}" class="change-pre-page">上一页</a>
+    <a href="#" onclick="alert('当前已是最后一页!');" class="change-post-page">下一页</a>
+    {% else %}
+    <a href="{{url_for('home.user',id = userid,name = username,code=200,page=spage-1)}}" class="change-pre-page"><span>上一页</span></a>
+    <a href="{{url_for('home.user',id = userid,name = username,code=200,page=spage+1)}}" class="change-post-page"><span>下一页</span></a>
+    {% endif %}
+
+</div>
+{%endblock%}

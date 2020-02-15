@@ -1,0 +1,148 @@
+{% extends "home/userinfo.html"%}
+{% block mainpage %}
+<a href="{{url_for('home.user',name=username,id = userid,code=200,page=1)}}">主站</a>
+{% endblock %}
+{% block create %}
+<a href="{{url_for('home.create',username = username,id = userid)}}" class="link">投 稿</a>
+{% endblock %}
+
+
+{% block rank %}
+<a class="search-rank" href="{{url_for('home.rank',username=username)}}">排行榜</a>
+{% endblock %}
+
+
+
+
+{% block content %}
+<script type="text/javascript">
+    window.onload = function(){
+    {% for j in range(0,movie_num)%}
+    var a = document.createElement('a');
+    a.setAttribute("href","{{url_for('home.play',video_id=j+1,username=secret_name)}}");
+    a.setAttribute("target","_blank")
+    var img = document.createElement('img');
+    {% if face_list[j] == "None"%}
+        img.setAttribute("src","{{url_for('static',filename='video_face/default.jpg')}}");
+    {% else %}
+        img.setAttribute("src","{{url_for('static',filename='video_face/'+face_list[j])}}");
+    {% endif %}
+    img.setAttribute("alt","#");
+    var div = document.createElement('div');
+    div.setAttribute("class","info");
+    var p1 = document.createElement('p');
+    p1.setAttribute("class","title");
+    p1.innerHTML = {{title_list[j]|tojson}};
+    var p2 = document.createElement('p');
+    p2.innerHTML = "点赞数:"+{{goodnum_list[j]|tojson}};
+    p2.setAttribute("class","author");
+    var p3 = document.createElement('p');
+    p3.setAttribute("class","play");
+    p3.innerHTML = "弹幕:"+{{danmaku_list[j]|tojson}};
+    var li = document.createElement('li');
+    li.setAttribute("class","video-li");
+    var ul = document.getElementById('banner-ul');
+    div.appendChild(p1);
+    div.appendChild(p2);
+    div.appendChild(p3);
+    a.appendChild(img);
+    a.appendChild(div);
+    li.appendChild(a);
+    ul.appendChild(li);
+    {% endfor %}
+
+
+    {% if key_num == 0%}
+    $('.search-history').remove()
+    {% endif %}
+
+
+    //添加历史记录
+    {% for i in range(0,key_num)%}
+    var l = document.getElementById('list');
+    var a = document.createElement('a');
+    a.setAttribute("href","{{url_for('home.search',username=username,key = new_list[i])}}");
+    a.innerHTML = {{new_list[i]|tojson}};
+    l.appendChild(a);
+    {% endfor %}
+
+
+    }
+
+</script>
+<style>
+    .favorite-li{
+    text-align:center;
+    width:200px;
+    height:70px;
+    line-height:65px;
+    border:1px solid  #999999 ;
+    background-color:#00a1d7!important;
+
+    }
+    .change-li,.info-li{
+    text-align:center;
+    width:200px;
+    height:70px;
+    line-height:65px;
+    border:1px solid  #999999 ;
+
+    }
+    p{
+    font-size:30px;
+    font-family:微软雅黑;
+
+    }
+    .info-li:hover{background-color:#A9A9A9;}
+    .change-li:hover{background-color:#A9A9A9;}
+    li{
+    position:relative;
+    left:200px;
+    align:left;
+    }
+    .info-content{position:relative;
+          top:-200px;
+          left:450px;
+          height:600px;
+          width:1000px;
+          }
+    .blue-symbol{
+        float: left;
+        width: 4px;
+        height: 20px;
+        background-color: #00a1d6;
+        border-radius: 4px;}
+    .video-li{
+    position:relative;
+    left:-300px;
+    top:30px;
+    width:100px;
+    float:left;
+    margin-right:15px;
+    line-height:20px;
+    }
+    .title,.author,.play{font-size:15px;}
+    .banner-ul{
+    width:600px;
+    }
+
+
+
+</style>
+<div class="info-content">
+    <p style="font-size:20px;color:#00a1d6" class="fav">
+        <span class="blue-symbol"></span>&nbsp;我的收藏
+    </p>
+    {% if movie_num == 0%}
+    <p class ="fav">
+        您还未收藏视频!
+    </p>
+    {% else %}
+    <div class="banner-list fr">
+        <ul id="banner-ul">
+        </ul>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

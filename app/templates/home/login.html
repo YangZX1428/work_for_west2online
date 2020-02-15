@@ -1,0 +1,84 @@
+{% extends "home/log-and-regfa.html" %}
+{% block title %}
+<title>登录界面</title>
+{% endblock %}
+
+{% block content %}
+<style>
+        input{
+                border: 1px solid #ccc;
+                padding: 7px 0px;
+                border-radius: 3px;
+                padding-left:5px;
+                -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+                box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+                -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+                -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+                transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s
+                height:50px;
+                width:300px;
+            }
+            input:focus{
+                    border-color: #66afe9;
+                    outline: 0;
+                    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+                    box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6)
+            }
+            h2{font-size:25px;
+            position:relative;
+            left:230px;}
+            .logn,.logp,.logsub{
+            position:relative;
+            left:230px;
+
+
+            }
+            h1{
+            font-size:30px;
+            color:red;
+            position:relative;
+            left:160px;
+            }
+</style>
+<script type="text/javascript">
+    {% if code ==101%}
+    window.onload = function(){
+        alert("请先登录!");
+    }
+    {% endif %}
+</script>
+<img src="{{url_for('static',filename='bhtml/images/timg.jpg')}}" height="500px" width="750px" align="left">
+<form method="post">
+    {{loginform.csrf_token}}
+    <br>
+    <br>
+    <h1>哔哩哔哩 (゜-゜)つロ 干杯~-bilibili</h1>
+    <br>
+    <br>
+    <hr>
+    <br>
+
+    <h2>{{loginform.name.label}}</h2>
+    <br>
+    {{loginform.name}}
+
+
+    <h2>{{loginform.password.label}}</h2>
+    <br>
+
+    {{loginform.password}}
+    <br>
+    <br>
+    <br>
+    <hr>
+    <br>
+    {{loginform.submit}}
+
+    {% if error %}
+    <h2 style="color:red">{{error}}</h2>
+    {% endif %}
+    {% for f in get_flashed_messages() %}
+    <h2 style="color:red">{{f}}</h2>
+    {% endfor %}
+</form>
+{% endblock %}

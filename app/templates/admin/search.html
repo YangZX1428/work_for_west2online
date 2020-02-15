@@ -1,0 +1,121 @@
+{% extends "admin/play_home.html"%}
+{% block title %}
+<title>搜索结果</title>
+
+{% endblock %}
+
+
+{% block mainpage%}
+<a href="{{url_for('admin.mainpage',username=username,code=200,page=1)}}">主站</a>
+<script type="text/javascript">
+        $(function(){
+            $('.btn').click(function(){     //搜索按钮点击事件
+                var key = $('.text').val();     //获取搜索框内容那个
+                var data = JSON.stringify({     //传入key
+                'key': key
+                });
+                $.ajax({                        //ajax开始
+                url:"{{url_for('admin.search_handler',username=username)}}",
+                data:data,
+                type:'post',
+                success:function(data){
+                window.location.href = data;
+                },
+                });                             //ajax结束
+            });
+            {% for j in range(0,video_num)%}
+            var a = document.createElement('a');
+            a.setAttribute("href","{{url_for('admin.play',video_id=j+1,username=username)}}");
+            a.setAttribute("target","_blank")
+            var img = document.createElement('img');
+            {% if face_list[j] == "None"%}
+                img.setAttribute("src","{{url_for('static',filename='video_face/default.jpg')}}");
+            {% else %}
+                img.setAttribute("src","{{url_for('static',filename='video_face/'+face_list[j])}}");
+            {% endif %}
+            img.setAttribute("alt","#");
+            var div = document.createElement('div');
+            div.setAttribute("class","info");
+            var p1 = document.createElement('p');
+            p1.setAttribute("class","title");
+            p1.innerHTML = {{title_list[j]|tojson}};
+            var p2 = document.createElement('p');
+            p2.innerHTML = "点赞数:"+{{goodnum_list[j]|tojson}};
+            p2.setAttribute("class","author");
+            var p3 = document.createElement('p');
+            p3.setAttribute("class","play");
+            p3.innerHTML = "弹幕:"+{{danmaku_list[j]|tojson}};
+            var li = document.createElement('li');
+            li.setAttribute("class","video-li");
+            var ul = document.getElementById('banner-ul');
+            div.appendChild(p1);
+            div.appendChild(p2);
+            div.appendChild(p3);
+            a.appendChild(img);
+            a.appendChild(div);
+            li.appendChild(a);
+            ul.appendChild(li);
+            {% endfor %}
+
+
+            {% if key_num==0%}
+            $('.search-history').remove();
+            {% endif %}
+
+
+            //添加历史记录
+            {% for i in range(0,key_num)%}
+            var l = document.getElementById('list');
+            var a = document.createElement('a');
+            a.setAttribute("href","{{url_for('admin.search',username=username,key = new_list[i])}}");
+            a.innerHTML = {{new_list[i]|tojson}};
+            l.appendChild(a);
+            {% endfor %}
+
+
+
+
+
+        })
+
+
+</script>
+{% endblock %}
+
+
+{% block userinfo %}
+<a href="{{url_for('admin.login_log',username = username)}}">登录日志</a>
+<span></span>
+<a href="{{url_for('admin.op_log',username = username)}}">管理日志</a>
+{% endblock %}
+
+
+{% block content %}
+<div style="height:1000px;width:805px;margin-left:270px;margin-top:20px;">
+    <div style="height:1000px;width:275px;float:left;">
+        <p style="font-size:30px;color:#fb7299;">"{{key}}"&nbsp;搜索结果</p>
+    </div>
+    <div style="height:1000px;width:5px;float:left;background:#fb7299;"></div>
+    {% if video_num == 0%}
+    <div style="height:1000px;width:520px;float:left;">
+        <p class="fav" style="font-size:30px">
+            未找到相关视频!
+        </p>
+    </div>
+    <div style="height:1000px;width:5px;float:left;background:#fb7299;"></div>
+    {% else %}
+    <div class="banner-list fr" style="height:1000px;width:520px;float:left;">
+        <div style="height:100px;width:520px;display:inline-block;">
+            <p style="font-size:30px;">相关视频共{{video_num}}个</p>
+            <hr style="background:#fb7299;border:1px solid #fb7299;" size="4">
+        </div>
+        <div style="height:900px;width:520px;display:inline-block;">
+            <ul id="banner-ul">
+            </ul>
+        </div>
+    </div>
+    <div style="height:1000px;width:5px;float:left;background:#fb7299;"></div>
+    {% endif %}
+</div>
+
+{% endblock %}

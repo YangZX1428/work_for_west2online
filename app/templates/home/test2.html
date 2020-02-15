@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<script type="text/javascript" src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>
+
+<script>
+$(document).on("click",".like",function(){
+    var dataid=$(this).attr("data-id");
+    var url='3tii.com/test/ajax.php?id='+dataid;
+        $.ajax({
+            url: url,
+            type: 'get',
+            dataType:'json',
+            success: function (data) {
+                $('.zan').html(data.html);
+            }
+        });
+});
+
+</script>
+<body>
+    <a class="like" data-id="55">点我赞一个<span class="zan">99</span></a>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="order by dede58.com/"/>
+    <title>个人中心</title>
+    <link rel="shortcut icon" href="{{url_for('static',filename = 'bhtml/favicons/b.jpg')}}">
+
+    <link rel="stylesheet" href="{{url_for('static',filename='bhtml/css/reset.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='bhtml/css/common.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='bhtml/css/index.css')}}">
+    <script type="text/javascript" src="{{url_for('static',filename='bhtml/js/jquery.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static',filename='bhtml/js/script.js')}}"></script>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            $('.btn').click(function(){     //搜索按钮点击事件
+                var key = $('.text').val();     //获取搜索框内容那个
+                var data = JSON.stringify({     //传入key
+                'key': key
+                });
+                $.ajax({                        //ajax开始
+                url:"{{url_for('home.search_handler',username=username)}}",
+                data:data,
+                type:'post',
+                success:function(data){
+                window.location.href = data;
+                },
+                });                             //ajax结束
+            });
+        })
+    </script>
+</head>
+<body>
+<style>
+    #welcome{
+    font-size:20px;
+    font-family:arial;}
+
+
+</style>
+
+<header id="header">
+    <div id="page_top">
+        <div class="bg-wrap">
+            <div class="bg"></div>
+            <div class="mask"></div>
+        </div>
+        <div class="header-top">
+            <div class="page-width clearfix">
+                <div class="header-top__nav">
+                    <ul>
+                        <li class="item item-home">
+                            {% block mainpage %}{% endblock %}
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="header-top__user">
+                    <div class="login-box">
+
+                        <a id="welcome">欢迎回来,{{username}}!</a>
+                        <a href="{{url_for('home.userinfo',username=username)}}">个人中心</a>
+                        <span></span>
+                        <a href="{{url_for('home.mainpage',page=1)}}">注销</a>
+                    </div>
+
+                    <div class="user-post">
+                       {% block create %}{% endblock %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header-c">
+        <div class="page-width">
+            <a href="#" id="header_logo"></a>
+            <p id="header_title"></p>
+            <div id="search" class="clearfix">
+
+                {% block rank %}{%endblock%}
+                <div class="search-box">
+                    <input type="text" class="text" placeholder="Search here...">
+                    <a href="#" class="btn"><i></i></a>
+                    <div class="search-history">
+                        <div class="title">历史搜索</div>
+                        <div class="list" id="list">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-title">哔哩哔哩 (゜-゜)つロ 干杯~</div>
+        </div>
+    </div>
+</header>
+<div class="info-li-list">
+    <ul>
+        <li class="info-li" onclick="location.href='{{url_for('home.userinfo',username=username)}}'" style="cursor:pointer;">
+            <span>
+               <p id="user-info">个人资料</p>
+            </span>
+        </li>
+        <li class="favorite-li" onclick="location.href='{{url_for('home.favorite',username=username)}}'" style="cursor:pointer;">
+            <span>
+               <p id="user-favorite">我的收藏</p>
+            </span>
+        </li>
+        <li class="change-li" onclick="location.href='{{url_for('home.pwdchange',username=username)}}'" style="cursor:pointer;">
+            <span>
+                <p id="pwd-change">修改密码</p>
+            </span>
+        </li>
+
+    </ul>
+</div>
+{% block content%}{% endblock %}
+</body>
+</html>

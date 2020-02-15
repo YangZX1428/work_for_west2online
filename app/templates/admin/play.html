@@ -1,0 +1,408 @@
+{% extends "admin/play_home.html"%}
+{% block title %}
+<title>{{video_title}}</title>
+{% endblock %}
+{% block mainpage%}
+<a href="{{url_for('admin.mainpage',username=username,code=200,page=1)}}">主站</a>
+{% endblock %}
+{% block userinfo %}
+<a href="{{url_for('admin.login_log',username = username)}}">登录日志</a>
+<span></span>
+<a href="{{url_for('admin.op_log',username = username)}}">管理日志</a>
+{% endblock %}
+{% block rank %}
+{% endblock %}
+
+
+{%block content%}
+<script src="https://cdn.jsdelivr.net/npm/flv.js/dist/flv.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/hls.js/dist/hls.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.css">
+<script src="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.js"></script>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+
+    $('#pre-page').click(function(){             //上一页点击事件
+        if(this.name == "0"){    //如果当前已经是第一页
+            alert("当前已经是第一页!");
+        }
+        else
+       {                                        //当前不是第一页
+        var pre = this.name;
+        var prepage = Number(pre)-1;              //class字符串转数字，prepage为上一页的页码
+        var post = $('#post-page').attr("name");
+        var postpage = Number(post)-1+"";
+        $('#post-page').attr("name",postpage);
+        this.name = prepage+"";     //页码减一后当做新的class
+        var data = JSON.stringify({         //data块开始
+                'comment_num': {{comment}},//评论总数
+                'page': Number(pre),       //要更新的页码数
+
+            });
+        $.ajax({                            //ajax代码块开始
+            url:"{{url_for('admin.comment_handler',video_id = video_id)}}", // comment_handler为处理的视图函数
+            type:"post",
+            data:data,
+            success:function(data){
+                $('#comment-part').html(data);          //更新html代码
+                var prepage = $('#pre-page').attr("name");
+                var currentpage = Number(prepage)+1;
+                $('#current-page').html(currentpage+"");
+                           }
+        });                                 //ajax代码块结束
+        }                                   //else语句结束
+    });                                         //上一页点击事件函数结束
+
+
+
+
+    $('#post-page').click(function(){             //下一页点击事件
+        if(this.name > {{page_num}}){    //如果当前已经是最后一页
+            alert("当前已经是最后一页!");
+        }
+        else
+       {                                        //当前不是最后一页
+        var post = this.name;
+        var pre = $('#pre-page').attr("name");
+        var prepage = Number(pre)+1+"";
+        $('#pre-page').prop("name",prepage);
+        var postpage = Number(post)+1;              //class字符串转数字，prepage为下一页的页码
+        this.name = postpage+"";     //页码减一后当做新的class
+        var data = JSON.stringify({         //data块开始
+                'comment_num': {{comment}},//评论总数
+                'page': Number(post),       //要更新的页码数
+
+
+            });
+        $.ajax({                            //ajax代码块开始
+            url:"{{url_for('admin.comment_handler',video_id = video_id)}}", // comment_handler为处理的视图函数
+            type:"post",
+            data:data,
+            success:function(data){
+                $('#comment-part').html(data);          //更新html代码
+                var prepage = $('#pre-page').attr("name");
+                var currentpage = Number(prepage)+1;
+                $('#current-page').html(currentpage+"");
+                           },
+
+        });                                 //ajax代码块结束
+
+        }                                   //else语句结束
+    });
+    $('.btn').click(function(){     //搜索按钮点击事件
+                var key = $('.text').val();     //获取搜索框内容那个
+                var data = JSON.stringify({     //传入key
+                'key': key
+                });
+                $.ajax({                        //ajax开始
+                url:"{{url_for('admin.search_handler',username=username)}}",
+                data:data,
+                type:'post',
+                success:function(data){
+                window.location.href = data;
+                },
+                });                             //ajax结束
+            }); //搜索点击事件结束
+
+
+
+    $('.delete-video').click(function(){        //删除视频点击事件开始
+          var name = "{{username}}";
+          var video_id = {{video_id}};
+          var data = JSON.stringify({     //传入key
+                'admin_name': name,
+                'video_id':video_id,
+                });
+          $.ajax({
+                type:'post',
+                url:"{{url_for('admin.delete_handler')}}",
+                data:data,
+                success:function(data){
+                    window.location.href = data;
+                },
+          });
+    });                                         //删除视频点击事件结束
+
+
+
+    {% if key_num==0%}
+    $('.search-history').remove();
+    {% endif %}
+
+
+    //添加历史记录
+    {% for i in range(0,key_num)%}
+    var l = document.getElementById('list');
+    var a = document.createElement('a');
+    a.setAttribute("href","{{url_for('admin.search',username=username,key = new_list[i])}}");
+    a.innerHTML = {{new_list[i]|tojson}};
+    l.appendChild(a);
+    {% endfor %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {% for i in range(0,show)%}//评论展示部分
+    var cpdiv = document.getElementById('comment-part');
+    var hr = document.createElement('hr');
+    var cidiv = document.createElement('div');
+    cidiv.setAttribute("class","common-item");
+    var ufdiv = document.createElement('div');
+    ufdiv.setAttribute("class","user-face");
+    ufdiv.setAttribute("style","height:100px;width:100px;float:left;");
+    var img = document.createElement('img');
+    img.setAttribute("class","face");
+    {% if face_list[i] == "None"%}
+        img.setAttribute("src","{{url_for('static',filename='faces/default.jpg')}}");
+    {% else %}
+        img.setAttribute("src","{{url_for('static',filename='faces/'+face_list[i])}}");
+    {% endif %}
+    img.setAttribute("height","50px");
+    img.setAttribute("width","50px");
+    ufdiv.appendChild(img)
+    var condiv = document.createElement('div');
+    condiv.setAttribute("style","height:100px;width:500px;float:left;word-wrap:break-word");
+    var userp = document.createElement('p');
+    var contp = document.createElement('p');
+    var timep = document.createElement('p');
+    var dela = document.createElement('a');
+    userp.setAttribute("style","font-size:25px;color:red;");
+    contp.setAttribute("class","comment-content");
+    timep.setAttribute("class","comment-time");
+    dela.setAttribute("id","del-"+{{id_list[i]|tojson}})
+    dela.setAttribute("class","delete-comment");
+    dela.setAttribute("href","javascript:void(0)");
+    dela.setAttribute("onclick","Delc(this)");
+    dela.innerHTML = "删除该评论";
+    userp.innerHTML = {{user_list[i]|tojson}};
+    contp.innerHTML = {{content_list[i]|tojson}};
+    timep.setAttribute("style","font-size:12px;position:relative;left:350px;");
+    timep.innerHTML = "发布于"+{{time_list[i]|tojson}};
+    condiv.appendChild(userp);
+    condiv.appendChild(contp);
+    condiv.appendChild(timep);
+    condiv.appendChild(dela);
+    cidiv.appendChild(ufdiv);
+    cidiv.appendChild(condiv);
+    cpdiv.appendChild(cidiv);
+    cpdiv.appendChild(hr);
+    {% endfor %}
+    {% if hav_comment%}
+    alert("发表成功!");
+    {% endif %}
+});//onload函数
+
+
+
+
+function Delc(obj){
+        var comid = $(obj).attr("id");
+        var data = JSON.stringify({     //传入key
+                'comment_id': comid,
+                'username':"{{username}}",
+                'video_id':{{video_id}},
+                });
+        $.ajax({
+                type:'post',
+                url:"{{url_for('admin.delete_comment_handler')}}",
+                data:data,
+                success:function(data){
+                    alert("删除成功!");
+                    window.location.href = data;
+                },
+                });
+    };
+
+
+
+
+//评论分页
+//1.第一页评论,comment-part 的class='1',
+//2.if class==1 判断是否是第一页，是则点击上一页时直接alert
+//3.不是则点击上一页令class从str->int，用Number方法
+//4.class -= 1，再toString()转化成字符串并成为新的class
+//5.将class和comment_number作为data发送给视图函数
+//6.视图函数处理并返回该页需展示多少评论
+//7.success函数接受数据，用html更新评论列表
+//8.点击下一页，判断class->int 是否等于comment_page数
+//9.若是则alert
+//10.不是则与上34567同理
+
+
+</script>
+<style>
+    #dplayer{
+    height:500px;
+    width:550px;
+    position:relative;
+    left:200px;
+    word-break:break-all;
+    }
+    h1{
+    font-size:30px;
+    }
+    .video-info{
+    position:relative;
+    left:200px;}
+    .zan-button{color:#ccc;}
+
+    .zan-b,.fav-b{height:56px;width:56px;}
+    a{cursor:pointer;}
+    .good-num{
+    height:56px;
+    width:56px;
+    }
+    #comment-part{
+    height:500px;
+    width:600px;
+    //position:relative;
+    //left:800px;
+    //top:90px;
+    float:left;
+    margin-left:30px;
+
+    }
+    .common-item{
+    width:600px;
+    height:100px;
+    font-size:15px;
+    font-family:微软雅黑;
+    display:inline-block;
+    }
+    #comment-info{
+    position:relative;
+    top:50px;
+    left:px;
+    }
+    .face{border-radius:50%;}
+    .comment-content{
+    position:relative;
+    top:20px;}
+    .comment-time{
+    position:relative;
+    top:40px;
+    }
+    .comment-area{
+    height:100px;
+    width:400px;
+    border-radius:3px;
+    resize:none;
+    border:2px solid;
+    font-size:20px;
+    }
+    .comment-submit{
+    height:60px;
+    width:60px;
+    font-size:20px;
+    color:white;
+    background:#fb7299;
+    border-radius:10px;
+    border:2px solid #fb7299;
+    }
+    .delete-comment{
+    position:relative;
+    height:18px;
+    width:84px;
+    top:30px;
+    background:#fb7299;
+    border:3px solid #f7299;
+    border-radius:5px;
+    color:white;
+    font-size:15px;
+    text-align:center;
+    vertical-align:center;
+    }
+
+
+</style>
+<div id="entire-part" style="height:1000px;">
+    <br>
+    <br>
+    <div id="video-part" style="height:1000px;width:750px;float:left;">
+        <div style="height:30px;width:750px;display:inline-block;">
+            <h1 class="video-info">{{video_title}}</h1>
+        </div>
+        <div style="height:70px;width:300px;display:inline-block;float:left;">
+            <br>
+            <p class="video-info" style="font-size:15px;">类型->{{tag_name}}</p>
+            <br>
+            <p class="video-info" style="font-size:15px;">{{danmaku}}弹幕</p>
+        </div>
+        <div style="height:70px;width:450px;float:left;">
+            <p style="font-size:20px;position:relative;left:170px;">视频管理操作:</p>
+            <a href="#" class="delete-video" style="height:30px;width:140px;background:#fb7299;border:3px solid #fb7299;border-radius:3px;font-size:25px;color:white;position:relative;left:300px;">
+                &nbsp;删除该视频
+            </a>
+        </div>
+        <br>
+        <div id="dplayer"></div>
+        <br>
+        <br>
+        <p style="font-size:15px;position:relative;top:-20px;left:200px;height:45px;width:600px;">视频简介:<br><br>{{info}}</p>
+    </div>
+    <div id="comment-num-info" style="height:120px;width:600px;display:inline-block;margin-left:30px;">
+        <span style="font-size:30px;width:300px;" id="comment-info">评论(共{{comment}}条):<hr></span>
+    </div>
+    {% if comment == 0%}
+    <p style="font-size:30px;position:relative;left:30px;color:red;">该视频还没有评论!</p>
+    {% else %}
+
+    <div id="comment-part" class="2">
+
+    </div>
+    <div id="page-change" style="height:30px;width:600px;display:inline-block;margin-left:30px;">
+        <a id="pre-page" href="javascript:void(0)"
+           style="display:inline;font-size:25px;height:25px;width:60px;background:#fb7299;color:white;border-radius:3px;"
+           name="0">上一页</a>
+        <span style="display:inline;font-size:25px;position:relative;left:150px;">第<span id="current-page">1</span>页/共{{page_num}}页</span>
+        <a id="post-page" href="javascript:void(0)"
+           style="display:inline;font-size:25px;height:25px;width:60px;background:#fb7299;color:white;border-radius:3px;position:relative;left:300px;"
+           name="2">下一页</a>
+    </div>
+    {% endif %}
+    <br>
+    <br>
+    <br>
+    <br>
+
+
+</div>
+<script>
+    const dp = new DPlayer({
+    container: document.getElementById('dplayer'),
+    lang:"zh-cn",
+    hotkey:true,
+    video: {
+
+        url: '{{url_for('static',filename='video/'+new_url)}}',
+    },
+    danmaku: {
+        id: '9E2E3368B56CDBB4',
+
+        api: 'https://api.prprpr.me/dplayer/',
+        token: 'tokendemo',
+        maximum: 1000
+    }
+});
+
+
+
+
+
+
+</script>
+{% endblock %}

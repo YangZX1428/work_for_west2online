@@ -1,0 +1,164 @@
+{% extends "home/user_play_base.html"%}
+{% block title %}
+<title>视频投稿</title>
+<script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            $('.btn').click(function(){     //搜索按钮点击事件
+                var key = $('.text').val();     //获取搜索框内容那个
+                var data = JSON.stringify({     //传入key
+                'key': key
+                });
+                $.ajax({                        //ajax开始
+                url:"{{url_for('home.search_handler',username=username)}}",
+                data:data,
+                type:'post',
+                success:function(data){
+                window.location.href = data;
+                },
+                });                             //ajax结束
+            });
+        })
+    </script>
+{% endblock %}
+
+
+{% block mainpage %}
+<a href="{{url_for('home.user',name=username,id = userid,code=200,page=1)}}">主站</a>
+{% endblock %}
+
+
+{% block userinfo%}
+<style>
+    #welcome{
+    font-size:20px;
+    font-family:arial;}
+    #tag{
+    flex: 1;
+    height: 50px;
+    width:87px;
+    background-color: #E2E0E0;
+    border-left: 1px solid #cecece;
+    padding-left: 10px;
+    font-size:20px;
+    }
+    .create-title{
+    height:30px;
+    width:500px;
+    border-radius:10px;
+    border:3px solid #fb7299;
+    font-size:25px;
+    }
+    .create-info{
+    height:90px;
+    width:500px;
+    resize:none;
+    border-radius:10px;
+    border:3px solid #fb7299;
+    font-size:20px;
+    }
+    .create-face{
+    height:80px;
+    width:160px;
+    }
+    .create-radio{
+    position:relative;
+    left:200px;
+    }
+    .create-submit{
+    height:60px;
+    width:100px;
+    background:#fb7299;
+    color:white;
+    border-radius:5px;
+    border:3px solid #fb7299;
+    font-size:25px;
+    position:relative;
+    left:200px;
+    top:30px;
+    }
+</style>
+<a id="welcome">欢迎回来,{{username}}!</a>
+<a href="{{url_for('home.userinfo',username=username)}}">个人中心</a>
+<span></span>
+<a href="{{url_for('home.mainpage',page=1)}}">注销</a>
+{% endblock %}
+
+
+{% block create %}
+<a href="{{url_for('home.create',username = username,id = userid)}}" class="link">投 稿</a>
+{% endblock %}
+
+
+{% block rank %}
+<a class="search-rank" href="{{url_for('home.rank',username=username)}}">排行榜</a>
+{% endblock %}
+
+
+{% block content%}
+<div style="height:800px;width:800px;margin-left:400px;margin-top:100px;">
+    <form method="post" style="height:800px;width:800px;" enctype="multipart/form-data">
+        {{form.csrf_token}}
+        <div id="c-title" style="height:100px;width:800px;display:inline-block;">
+            <div style="height:100px;width:200px;float:left;">
+                <p style="font-size:25px;color:#fb7299;position:relative;top:5px;">请输入视频标题:</p>
+            </div>
+            <div style="height:100px;width:600px;float:left;">
+                {{form.video_title}}
+            </div>
+        </div>
+        <div id="c-info" style="height:100px;width:800px;display:inline-block;">
+            <div style="height:100px;width:200px;float:left;">
+                <p style="font-size:25px;color:#fb7299;position:relative;top:5px;">请输入视频简介:</p>
+            </div>
+            <div style="height:100px;width:600px;float:left;">
+                {{form.info}}
+            </div>
+
+        </div>
+        <div id="c-face" style="height:100px;width:800px;display:inline-block;">
+            <div style="height:100px;width:200px;float:left;">
+                <p style="font-size:25px;color:#fb7299;position:relative;top:5px;">请上传视频封面</p>
+            </div>
+            <div style="height:100px;width:600px;float:left;">
+                <br><br>
+                <p style="font-size:20px;color:blue;">仅支持上传.jpg文件!</p>
+                <br>
+                {{form.face}}
+            </div>
+
+        </div>
+        <div id="c-tag" style="height:100px;width:800px;display:inline-block;">
+            <div style="height:100px;width:200px;float:left;">
+                <p style="font-size:25px;color:#fb7299;position:relative;top:5px;">请选择视频标签</p>
+            </div>
+            <div style="height:100px;width:600px;float:left;">
+                <br>
+                <p style="font-size:20px;color:blue;">点击右侧箭头选择视频标签</p>
+                <br><br>
+
+                {{form.tag}}
+            </div>
+
+        </div>
+        <div id="c-video" style="height:100px;width:800px;display:inline-block;">
+            <div style="height:100px;width:200px;float:left;">
+                <p style="font-size:25px;color:#fb7299;position:relative;top:5px;">请上传视频文件</p>
+            </div>
+            <div style="height:100px;width:600px;float:left;">
+                <br><br>
+                <p style="font-size:20px;color:blue;">仅支持mp4视频文件!</p>
+                <br><br>
+                {{form.video_file}}
+            </div>
+
+        </div>
+        <div id="c-submit" style="height:100px;width:800px;display:inline-block;">
+            {{form.submit}}
+        </div>
+
+
+
+    </form>
+</div>
+{% endblock %}

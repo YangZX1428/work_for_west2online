@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="order by dede58.com/"/>
+    <title>首页</title>
+    <link rel="shortcut icon" href="{{url_for('static',filename = 'bhtml/favicons/b.jpg')}}">
+
+    <link rel="stylesheet" href="{{url_for('static',filename='bhtml/css/reset.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='bhtml/css/common.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='bhtml/css/index.css')}}">
+    <script type="text/javascript" src="{{url_for('static',filename='bhtml/js/jquery.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static',filename='bhtml/js/script.js')}}"></script>
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            $('.btn').click(function(){     //搜索按钮点击事件
+                var key = $('.text').val();     //获取搜索框内容那个
+                var data = JSON.stringify({     //传入key
+                'key': key
+                });
+                $.ajax({                        //ajax开始
+                url:"{{url_for('home.search_handler',username='not_login')}}",
+                data:data,
+                type:'post',
+                success:function(data){
+                window.location.href = data;
+                },
+                });                             //ajax结束
+            });
+            });
+    //以下脚本实现四张主图的切换
+    function fun1(obj){
+        var pic = $(obj);
+        var now_jpeg = pic.attr("id");
+        //document.writeln(now_jpeg);
+        switch(now_jpeg)
+        {
+            case 'pic-1':
+                $('#pic-2').attr("class","no");
+                $('#pic-3').attr("class","no");
+                $('#pic-4').attr("class","no");
+                document.getElementById('pic-text').innerHTML = "come to video 1";
+                document.getElementById('pic-1').setAttribute("class",'cur');
+                document.getElementById('pic-play').setAttribute("href","{{url_for('home.play',video_id=1,username='not_login')}}");
+                document.getElementById('pic-img').setAttribute("src","{{url_for('static',filename='bhtml/images/cont/slider_img1.png')}}");
+                break;
+            case 'pic-2':
+                $('#pic-1').attr("class","no");
+                $('#pic-3').attr("class","no");
+                $('#pic-4').attr("class","no");
+                document.getElementById('pic-text').innerHTML = "come to video 2";
+                document.getElementById('pic-2').setAttribute("class",'cur');
+                document.getElementById('pic-play').setAttribute("href","{{url_for('home.play',video_id=2,username='not_login')}}");
+                document.getElementById('pic-img').setAttribute("src","{{url_for('static',filename='bhtml/images/cont/slider_img2.png')}}");
+                break;
+            case 'pic-3':
+                $('#pic-1').attr("class","no");
+                $('#pic-2').attr("class","no");
+                $('#pic-4').attr("class","no");
+                document.getElementById('pic-text').innerHTML = "come to video 3";
+                document.getElementById('pic-3').setAttribute("class",'cur');
+                document.getElementById('pic-play').setAttribute("href","{{url_for('home.play',video_id=3,username='not_login')}}");
+                document.getElementById('pic-img').setAttribute("src","{{url_for('static',filename='bhtml/images/cont/slider_img3.png')}}");
+                break;
+            case 'pic-4':
+                $('#pic-1').attr("class","no");
+                $('#pic-2').attr("class","no");
+                $('#pic-3').attr("class","no");
+                document.getElementById('pic-text').innerHTML = "come to video 4"
+                document.getElementById('pic-4').setAttribute("class",'cur');
+                document.getElementById('pic-play').setAttribute("href","{{url_for('home.play',video_id=4,username='not_login')}}");
+                document.getElementById('pic-img').setAttribute("src","{{url_for('static',filename='bhtml/images/cont/slider_img4.png')}}");
+
+        }
+
+    }
+</script>
+</head>
+<body>
+
+<header id="header">
+    <div id="page_top">
+        <div class="bg-wrap">
+            <div class="bg"></div>
+            <div class="mask"></div>
+        </div>
+        <div class="header-top">
+            <div class="page-width clearfix">
+                <div class="header-top__nav">
+                    <ul>
+                        <li class="item item-home">
+                            <a href="{{url_for('home.mainpage',page=1)}}">主站</a>
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="header-top__user">
+                    <div class="login-box">
+                        <a href="{{url_for('home.login',code=0)}}">登录</a>
+                        <span></span>
+                        <a href="{{url_for('home.regist')}}">注册</a>
+                    </div>
+                    <div class="user-post">
+                        <a href="{{url_for('home.login',code=101)}}" class="link">投 稿</a>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header-c">
+        <div class="page-width">
+            <a href="#" id="header_logo"></a>
+            <p id="header_title"></p>
+            <div id="search" class="clearfix">
+                <a class="search-rank" href="{{url_for('home.rank',username='not_login')}}">排行榜</a>
+                <div class="search-box">
+                    <input type="text" class="text" placeholder="Search here...">
+                    <a href="#" class="btn"><i></i></a>
+                    <div class="search-history">
+                        <div class="title">历史搜索</div>
+                        <div class="list" id="list">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-title">哔哩哔哩 (゜-゜)つロ 干杯~</div>
+        </div>
+    </div>
+</header>
+
+<div id="nav">
+    <div class="page-width clearfix">
+        <ul class="nav-list">
+            <li class="item item-home">
+                <a href="{{url_for('home.mainpage',page=1)}}" class="link">首页</a>
+            </li>
+            <li class="item">
+                <a href="{{url_for('home.tag_show',username='not_login',tag_id = 1)}}" class="link">
+
+                    动画
+                </a>
+
+            </li>
+            <li class="item">
+                <a href="{{url_for('home.tag_show',username='not_login',tag_id = 2)}}" class="link">
+
+                    番剧
+                </a>
+            </li>
+            <li class="item">
+                <a href="{{url_for('home.tag_show',username='not_login',tag_id = 3)}}" class="link">
+                    音乐
+                </a>
+            </li>
+            <li class="item">
+                <a href="{{url_for('home.tag_show',username='not_login',tag_id = 4)}}" class="link">
+
+                    舞蹈
+                </a>
+
+            </li>
+            <li class="item">
+                <a href="{{url_for('home.tag_show',username='not_login',tag_id = 5)}}" class="link">
+
+                    游戏
+                </a>
+
+            </li>
+            <li class="item">
+                <a href="{{url_for('home.tag_show',username='not_login',tag_id = 6)}}" class="link">
+
+                    科技
+                </a>
+
+            </li>
+            <li class="item">
+                <a href="{{url_for('home.tag_show',username='not_login',tag_id = 7)}}" class="link">
+
+                    生活
+                </a>
+
+            </li>
+            <li class="item">
+                <a href="{{url_for('home.tag_show',username='not_login',tag_id = 8)}}" class="link">
+
+                    鬼畜
+                </a>
+
+            </li>
+            <li class="item">
+                <a href="{{url_for('home.tag_show',username='not_login',tag_id = 9)}}" class="link">
+
+                    时尚
+                </a>
+
+            </li>
+            <li class="item">
+                <a href="{{url_for('home.tag_show',username='not_login',tag_id = 12)}}" class="link">
+
+                    广告
+                </a>
+            </li>
+            <li class="item">
+                <a href="{{url_for('home.tag_show',username='not_login',tag_id = 10)}}" class="link">
+
+                    娱乐
+                </a>
+
+            </li>
+            <li class="item">
+                <a href="{{url_for('home.tag_show',username='not_login',tag_id = 11)}}" class="link">
+
+                    影视
+                </a>
+
+            </li>
+
+            <li class="item item-square" style="position:relative;left:45px;">
+                <a href="{{url_for('admin.login')}}" class="link" style="color:white;font-size:25px;border:2px solid #fb7299;background:#fb7299;border-radius:5px;height:40px;width:170px;">后台管理入口</a>
+            </li>
+
+        </ul>
+        <!--<div class="nav-gif"><img src="images/cont/nav_img.gif" alt="求领养"></div>-->
+        <!--</div>-->
+    </div>
+</div>
+
+<div id="banner">
+    <div class="page-width clearfix">
+        <div class="slider fl">
+            <div class="slider-img">
+                <a href="{{url_for('home.play',username='not_login',video_id=1)}}" slider-title="pic1" id="pic-play"><img id="pic-img" src="{{url_for('static',filename='bhtml/images/cont/slider_img1.png')}}" alt="#"></a>
+            </div>
+            <div class="slider-title"><p id="pic-text">come to video 1</p></div>
+            <div class="slider-btn">
+                <span id="pic-1" name="pic" class="cur" onclick="fun1(this)"></span>
+                <span  id="pic-2" name="pic" onclick="fun1(this)"></span>
+                <span id="pic-3" name="pic" onclick="fun1(this)"></span>
+                <span id="pic-4" name="pic" onclick="fun1(this)"></span>
+            </div>
+
+
+        </div>
+        {% block content %}{% endblock %}<!--该定义块用于添加不同页码的视频列表-->
+    </div>
+</div>
+
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+</body>
+</html>

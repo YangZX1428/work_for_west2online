@@ -1,0 +1,135 @@
+{% extends "home/userinfo.html"%}
+{% block mainpage %}
+<a href="{{url_for('home.user',name=username,id = userid,code=200,page=1)}}">主站</a>
+{% endblock %}
+{% block create %}
+<a href="{{url_for('home.create',username = username,id = userid)}}" class="link">投 稿</a>
+{% endblock %}
+
+
+
+{% block rank %}
+<a class="search-rank" href="{{url_for('home.rank',username=username)}}">排行榜</a>
+{% endblock %}
+
+
+{% block content %}
+<script type="text/javascript">
+    window.onload = function(){
+    {% if key_num == 0%}
+    $('.search-history').remove()
+    {% endif %}
+
+
+    //添加历史记录
+    {% for i in range(0,key_num)%}
+    var l = document.getElementById('list');
+    var a = document.createElement('a');
+    a.setAttribute("href","{{url_for('home.search',username=username,key = new_list[i])}}");
+    a.innerHTML = {{new_list[i]|tojson}};
+    l.appendChild(a);
+    {% endfor %}
+    }
+</script>
+<style>
+    .change-li{
+    text-align:center;
+    width:200px;
+    height:70px;
+    line-height:65px;
+    border:1px solid  #999999 ;
+    background-color:#00a1d7!important;
+
+    }
+    .info-li,.favorite-li{
+    text-align:center;
+    width:200px;
+    height:70px;
+    line-height:65px;
+    border:1px solid  #999999 ;
+
+    }
+    p{
+    font-size:30px;
+    font-family:微软雅黑;
+
+    }
+    .favorite-li:hover{background-color:#A9A9A9;}
+    .info-li:hover{background-color:#A9A9A9;}
+    li{
+    position:relative;
+    left:200px;
+    align:left;
+    }
+    .info-content{position:relative;
+          top:-200px;
+          left:450px;
+          height:600px;
+          width:1000px;
+          }
+    .blue-symbol{
+        float: left;
+        width: 4px;
+        height: 20px;
+        background-color: #00a1d6;
+        border-radius: 4px;}
+        .pwd-form{
+            font-size:30px;
+            color:#00a1d6;
+            position:relative;
+            top:50px;
+            text-align:center;
+        }
+        .pwd1,.pwd2{
+        font-size:30px;
+        height:30px;
+        width:300px;
+        border:2px solid;
+        }
+        .pwd-submit{
+        height:60px;
+        width:120px;
+        font-size:30px;
+        color:white;
+        background-color:#fb7299;
+        border-radius:10px;
+        border:1px solid #fb7299;
+        text-align:center;
+        position:relative;
+        top:50px;
+    }
+    .error-warning{
+    position:relative;
+    top:15px;
+
+    }
+</style>
+<div class="info-content">
+    <p style="font-size:20px;color:#00a1d6">
+        <span class="blue-symbol"></span>&nbsp;修改密码
+    </p>
+    <form method="post" class="pwd-form">
+        {{form.csrf_token}}
+        <p class="refer">请输入新密码</p><br>
+        {{form.password1}}
+        {% for e in form.password1.errors %}
+        <p class="error-warning" style="color:red">{{e}}</p>
+        {% endfor %}
+        <p>&nbsp;</p>
+        <p class="refer">请确认密码</p>
+        <br>
+
+        {{form.password2}}
+        {% for e in form.password2.errors %}
+        <p class="error-warning" style="color:red">{{e}}</p>
+        {% endfor %}
+        <br>
+        {{form.submit}}
+        <br><br><br><br>
+        {% for f in get_flashed_messages()%}
+        <p style="color:red">{{f}}</p>
+        {%endfor%}
+
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="order by dede58.com/"/>
+    {% block title %}{% endblock %}
+    <link rel="shortcut icon" href="{{url_for('static',filename = 'bhtml/favicons/b.jpg')}}">
+
+    <link rel="stylesheet" href="{{url_for('static',filename='bhtml/css/reset.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='bhtml/css/common.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='bhtml/css/index.css')}}">
+    <script type="text/javascript" src="{{url_for('static',filename='bhtml/js/jquery.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static',filename='bhtml/js/script.js')}}"></script>
+</head>
+<body>
+
+<header id="header">
+    <div id="page_top">
+        <div class="bg-wrap">
+            <div class="bg"></div>
+            <div class="mask"></div>
+        </div>
+        <div class="header-top">
+            <div class="page-width clearfix">
+                <div class="header-top__nav">
+                    <ul>
+                        <li class="item item-home">
+                            {% block mainpage %}{% endblock %}
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="header-top__user">
+                    <div class="login-box">
+                        {% block userinfo %}{% endblock %}
+                    </div>
+
+                    <div class="user-post">
+                        {% block create %}{% endblock %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header-c">
+        <div class="page-width">
+            <a href="#" id="header_logo"></a>
+            <p id="header_title"></p>
+            <div id="search" class="clearfix">
+                {% block rank %}{% endblock %}
+                <div class="search-box">
+                    <input type="text" class="text" placeholder="Search here...">
+                    <a href="#" class="btn"><i></i></a>
+                    <div class="search-history">
+                        <div class="title">历史搜索</div>
+                        <div class="list" id="list">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-title">哔哩哔哩 (゜-゜)つロ 干杯~</div>
+        </div>
+    </div>
+</header>
+{% block content %}{% endblock %}
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+</body>
+</html>

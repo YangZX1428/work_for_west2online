@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="author" content="order by dede58.com/"/>
+    <title>首页</title>
+    <link rel="shortcut icon" href="{{url_for('static',filename = 'bhtml/favicons/b.jpg')}}">
+
+    <link rel="stylesheet" href="{{url_for('static',filename='bhtml/css/reset.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='bhtml/css/common.css')}}">
+    <link rel="stylesheet" href="{{url_for('static',filename='bhtml/css/index.css')}}">
+    <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="{{url_for('static',filename='bhtml/js/jquery.min.js')}}"></script>
+    <script type="text/javascript" src="{{url_for('static',filename='bhtml/js/script.js')}}"></script>
+
+</head>
+<body>
+
+<header id="header">
+    <div id="page_top">
+        <div class="bg-wrap">
+            <div class="bg"></div>
+            <div class="mask"></div>
+        </div>
+        <div class="header-top">
+            <div class="page-width clearfix">
+                <div class="header-top__nav">
+                    <ul>
+                        <li class="item item-home">
+                            {% block mainpage %}{% endblock %}
+                        </li>
+
+                    </ul>
+                </div>
+                <div class="header-top__user">
+                    <div class="login-box">
+                        {% block log%}{% endblock %}
+                    </div>
+                    <div class="user-post">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="header-c">
+        <div class="page-width">
+            <a href="#" id="header_logo"></a>
+            <p id="header_title"></p>
+            <div id="search" class="clearfix">
+                <div class="search-box">
+                    <input type="text" class="text" placeholder="Search here...">
+                    <a href="#" class="btn"><i></i></a>
+                    <div class="search-history">
+                        <div class="title">历史搜索</div>
+                        <div class="list" id="list">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-title">哔哩哔哩 (゜-゜)つロ 干杯~</div>
+        </div>
+    </div>
+</header>
+
+<div id="nav">
+    <div class="page-width clearfix">
+        <ul class="nav-list">
+            {% block list %}{% endblock %}
+
+
+            <li class="item item-square" style="position:relative;left:45px;">
+                {% block  admin %}{% endblock %}
+            </li>
+
+        </ul>
+        <!--<div class="nav-gif"><img src="images/cont/nav_img.gif" alt="求领养"></div>-->
+        <!--</div>-->
+    </div>
+</div>
+
+<div id="banner">
+    <div class="page-width clearfix">
+        <div class="slider fl">
+            {% block img %}{% endblock %}
+
+            {% block pic %}{% endblock %}
+        </div>
+        {% block content %}{% endblock %}<!--该定义块用于添加不同页码的视频列表-->
+    </div>
+</div>
+<div style="position:relative;left:300px;height:150px;width:350px;margin-left:30px;">
+    <br><br>
+    <p style="color:red;font-size:25px;">您已进入后台管理页面</p><br>
+    <p style="color:red;font-size:25px;">右上角可查看日志信息</p><br>
+    <p style="color:red;font-size:25px;">进入视频界面可管理视频或评论</p>
+</div>
+
+<script src="http://www.jq22.com/jquery/jquery-1.10.2.js"></script>
+</body>
+</html>
