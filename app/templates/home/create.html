@@ -17,7 +17,21 @@
                 window.location.href = data;
                 },
                 });                             //ajax结束
+
             });
+            {% if key_num == 0%}
+    $('.search-history').remove()
+    {% endif %}
+
+
+    //添加历史记录
+    {% for i in range(0,key_num)%}
+    var l = document.getElementById('list');
+    var a = document.createElement('a');
+    a.setAttribute("href","{{url_for('home.search',username=username,key = new_list[i])}}");
+    a.innerHTML = {{new_list[i]|tojson}};
+    l.appendChild(a);
+    {% endfor %}
         })
     </script>
 {% endblock %}

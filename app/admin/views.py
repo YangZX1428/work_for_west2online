@@ -1,7 +1,7 @@
 from . import admin
 from .forms import adminForm
 from ..models import User, Video, Admin, Comment, Zan_records, Fav_records, db, Favorite, Adminlog, Oplog, Tag, Userlog
-from flask import render_template, redirect, url_for, request, flash
+from flask import render_template, redirect, url_for, request, flash, g
 import base64
 import math
 import time
@@ -37,9 +37,32 @@ def get_comment(cs):
     return content_list, user_list, time_list, face_list, id_list
 
 
+current_user = ""
+current_user_name = ""
+
+
+@admin.before_request
+def get_g_content():
+    global current_user
+    global current_user_name
+    if current_user == "":
+        pass
+    else:
+        g.user = User.query.filter_by(name=current_user_name).first()
+        g.username = current_user_name
+        sr = StrictRedis()
+        g.search_history = [str(b, encoding="utf-8") for b in sr.lrange("admin_" + current_user_name, 0, -1)]
+        g.key_num = len(sr.lrange("admin_"+current_user_name, 0, -1))
+
+
 @admin.route('/mainpage/<username>/page=<int:page>/<int:code>')
 def mainpage(username, page, code):
-    userid = User.query.filter_by(name=username).first().id
+    global current_user_name
+    global current_user
+    current_user_name = username
+    current_user = User.query.filter_by(name=username).first()
+    g.user = current_user
+    g.username = username
     secret_name = base64.b64encode(username.encode())
     vs = Video.query.all()
     id_list = []
@@ -65,15 +88,19 @@ def mainpage(username, page, code):
     # 页数总数
     page_num = math.ceil(total_num / 6)
     sr = StrictRedis()
-    name = "admin_"+username
+    name = "admin_" + username
     key_num = len(sr.lrange(name, 0, -1))  # 搜索记录条数
     new_list = [str(b, encoding="utf-8") for b in sr.lrange(name, 0, -1)]
-    print(key_num)
-    return render_template('admin/mainpage.html', userid=userid, username=username,
-                           spage=base_page, start_page=start_page, dest_page=dest_page, page_num=page_num,
-                           id_list=id_list, title_list=title_list, face_list=face_list, goodnum_list=goodnum_list,
-                           danmaku_list=danmaku_list, secret_name=secret_name, code=code, total_num=total_num,
-                           new_list=new_list, key_num=key_num)
+    g.search_history = new_list
+    g.key_num = key_num
+    try:
+        return render_template('admin/mainpage.html', userid=g.user.id, username=username,
+                               spage=base_page, start_page=start_page, dest_page=dest_page, page_num=page_num,
+                               id_list=id_list, title_list=title_list, face_list=face_list, goodnum_list=goodnum_list,
+                               danmaku_list=danmaku_list, secret_name=secret_name, code=code, total_num=total_num,
+                               new_list=new_list, key_num=key_num)
+    except AttributeError:
+        return redirect(url_for('admin.login'))
 
 
 @admin.route('/login', methods=["POST", "GET"])
@@ -118,21 +145,22 @@ def play(username, video_id):
     tag_name = TAG_LIST[tag_id - 1]
     goodnum = v.Goodnum
     danmaku = v.danmaku
-    userid = User.query.filter_by(name=username).first().id
     for e in [".mp4", ".avi"]:
         new_url = url + e
         if os.path.exists(os.path.join(VIDEO_FOLDER, new_url)):
             break
-    sr = StrictRedis()
-    name = "admin_" + username
-    key_num = len(sr.lrange(name, 0, -1))  # 搜索记录条数
-    new_list = [str(b, encoding="utf-8") for b in sr.lrange(name, 0, -1)]
-    return render_template("admin/play.html", userid=userid, new_url=new_url, video_title=video_title,
-                           info=info, tag_name=tag_name, goodnum=goodnum, danmaku=danmaku, username=username,
-                           video_id=int(video_id), content_list=content_list,new_list = new_list,key_num = key_num,
-                           comment=comment, time_list=time_list, user_list=user_list, face_list=face_list,
-                           page_num=math.ceil(comment / 4),
-                           show=show, id_list=id_list)
+    try:
+        userid = g.user.id
+        print(g.search_history,g.key_num)
+        return render_template("admin/play.html", userid=userid, new_url=new_url, video_title=video_title,
+                               info=info, tag_name=tag_name, goodnum=goodnum, danmaku=danmaku, username=username,
+                               video_id=int(video_id), content_list=content_list, new_list=g.search_history,
+                               key_num=g.key_num,
+                               comment=comment, time_list=time_list, user_list=user_list, face_list=face_list,
+                               page_num=math.ceil(comment / 4),
+                               show=show, id_list=id_list)
+    except AttributeError:
+        return redirect(url_for('admin.login'))
 
 
 @admin.route("/comment_handler/<int:video_id>", methods=["POST", "GET"])
@@ -218,20 +246,18 @@ def tag_show(username, tag_id):
     danmaku_list = [v.danmaku for v in video.videoes]
     video_num = len(vs)
     tag_name = TAG_LIST[tag_id - 1]
-    userid = User.query.filter_by(name=username).first().id
-    sr = StrictRedis()
-    name = "admin_" + username
-    key_num = len(sr.lrange(name, 0, -1))  # 搜索记录条数
-    new_list = [str(b, encoding="utf-8") for b in sr.lrange(name, 0, -1)]
-    return render_template("admin/tag_show.html", username=username, tag_id=tag_id, video=vs, video_num=video_num,
-                           userid=userid,key_num = key_num,new_list = new_list,
-                           tag_name=tag_name, face_list=face_list, title_list=title_list, goodnum_list=goodnum_list,
-                           danmaku_list=danmaku_list)
+    try:
+        userid = g.user.id
+        return render_template("admin/tag_show.html", username=username, tag_id=tag_id, video=vs, video_num=video_num,
+                               userid=userid, key_num=g.key_num, new_list=g.search_history,
+                               tag_name=tag_name, face_list=face_list, title_list=title_list, goodnum_list=goodnum_list,
+                               danmaku_list=danmaku_list)
+    except AttributeError:
+        return redirect(url_for('admin.login'))
 
 
 @admin.route('/search_handler/<username>', methods=["POST", "GET"])
 def search_handler(username):
-    print(username)
     data = request.get_json("data")
     key = data["key"]
     new_url = url_for("admin.search", key=key, username=username)
@@ -240,7 +266,6 @@ def search_handler(username):
 
 @admin.route('/search/<username>/kw=<key>')
 def search(key, username):
-    print(username)
     vs = Video.query.all()
     result_ids = [v.id for v in vs if key in v.video_title]
     result_faces = [v.face for v in vs if key in v.video_title]
@@ -249,22 +274,27 @@ def search(key, username):
     result_danmaku = [v.danmaku for v in vs if key in v.video_title]
     v_num = len(result_ids)
     sr = StrictRedis()  # 连接redis
-    name = "admin_"+username
+    name = "admin_" + username
     whole_list = [str(b, encoding="utf-8") for b in sr.lrange(name, 0, -1)]  # 获取搜索记录
     if key in whole_list:
         sr.lrem(name, -1, bytes(key, encoding="utf-8"))  # 若记录中存在该关键字，则将关键字提前
     sr.lpush(name, key)  # 将搜索关键字加入list中，list名为用户名
-    key_num = len(sr.lrange("admin_"+username, 0, -1))  # 搜索记录条数
+    key_num = len(sr.lrange("admin_" + username, 0, -1))  # 搜索记录条数
     if key_num > 5:
         sr.rpop(name)  # 从右边删除多的记录,搜索记录最多五条
         key_num = 5
     new_list = [str(b, encoding="utf-8") for b in sr.lrange(name, 0, -1)]
-    userid = User.query.filter_by(name=username).first().id
-    print(key_num)
-    return render_template("admin/search.html", key=key, video_num=v_num, id_list=result_ids,
-                           face_list=result_faces, title_list=result_titles, goodnum_list=result_goodnums,
-                           danmaku_list=result_danmaku, username=username, userid=userid, new_list=new_list,
-                           key_num=key_num)
+    try:
+        userid = g.user.id
+        g.search_history = new_list
+        g.key_num = key_num
+        return render_template("admin/search.html", key=key, video_num=v_num, id_list=result_ids,
+                               face_list=result_faces, title_list=result_titles, goodnum_list=result_goodnums,
+                               danmaku_list=result_danmaku, username=username, userid=userid, new_list=g.search_history,
+                               key_num=g.key_num)
+
+    except AttributeError:
+        return redirect(url_for('admin.login'))
 
 
 @admin.route('/delete_comment_handler', methods=["POST", "GET"])
