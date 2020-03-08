@@ -30,11 +30,12 @@ from redis import StrictRedis
 
 VIDEO_FOLDER = r"G:\ThirdWork\work_for_west2online\app\static\video"
 UPLOAD_FOLDER = r"G:\ThirdWork\work_for_west2online\app\static\faces"
-VIDEO_FACE_FOLDER = r"G:\ThirdWork\work_for_west2online\app\static\faces"
+VIDEO_FACE_FOLDER = r"G:\ThirdWork\work_for_west2online\app\static\video_face"
 TAG_LIST = ["动画", "番剧", "音乐", "舞蹈", "游戏", "科技", "生活", "鬼畜", "时尚", "娱乐", "影视", "广告"]
 hasface = 0
 
 
+# 将数据库中保存的DateTime类型格式化为字符串
 def change_time_form(mtime):
     ul_time = time.mktime(mtime.timetuple())
     return str(datetime.datetime.fromtimestamp(ul_time))[0:10]
@@ -54,6 +55,15 @@ def get_comment(cs):
         face_list.append(u.face)
     return content_list, user_list, time_list, face_list
 
+def get_page(total_num,page):
+    if page > 1:
+        page  = (page-1)*6+1
+    start_page = page
+    dest_page = page + 5
+    if dest_page >= total_num:
+        dest_page = total_num
+    return start_page,dest_page
+
 
 current_user = ""
 current_user_name = ""
@@ -66,6 +76,7 @@ def get_g_content():
     if current_user == "":
         pass
     else:
+        # 登录后current_user 改变，将搜索记录信息以及相关对象保存至g变量中
         sr = StrictRedis()
         g.search_history = [str(b, encoding="utf-8") for b in sr.lrange(current_user_name, 0, -1)]
         g.key_num = len(sr.lrange(current_user_name, 0, -1))
@@ -112,6 +123,7 @@ def login(code):
     return render_template('home/login.html', loginform=form)
 
 
+# 访问127.0.0.1:5000时自动跳转到主页面
 @home.route('/')
 def fisrtpage():
     return redirect(url_for('home.mainpage', page=1))
@@ -166,12 +178,9 @@ def mainpage(page):
         danmaku_list.append(v.danmaku)
     total_num = len(vs)
     base_page = page
-    if page > 1:
-        page += 5
-    start_page = page
-    dest_page = page + 5
-    if dest_page >= total_num:
-        dest_page = total_num
+    # 每页显示6个视频
+    # 用start_page 和 dest_page 决定该页显示哪些id的视频
+    start_page,dest_page = get_page(total_num,page)
     # 页数总数
     page_num = math.ceil(total_num / 6)
     return render_template('home/index.html',
@@ -192,10 +201,10 @@ def mainpage(page):
 @home.route('/usesr/<int:id>/<name>/<int:code>/page=<int:page>')
 def user(id, name, code, page):
     is_admin = 0
+    # 该用户是管理员,则点击管理入口时直接进入
     if Admin.query.filter_by(name=name).first() is not None:
         is_admin = 1
     secret_name = base64.b64encode(name.encode())
-    print(secret_name)
     vs = Video.query.all()
     id_list = []
     title_list = []
@@ -211,12 +220,7 @@ def user(id, name, code, page):
         danmaku_list.append(v.danmaku)
     total_num = len(vs)
     base_page = page
-    if page > 1:
-        page += 5
-    start_page = page
-    dest_page = page + 5
-    if dest_page >= total_num:
-        dest_page = total_num
+    start_page,dest_page = get_page(total_num,page)
     # 页数总数
     page_num = math.ceil(total_num / 6)
     # 连接redis数据库用g容器保存搜索记录以及条数
@@ -235,11 +239,12 @@ def user(id, name, code, page):
                                id_list=id_list, title_list=title_list, face_list=face_list, goodnum_list=goodnum_list,
                                danmaku_list=danmaku_list, secret_name=secret_name, is_admin=is_admin,
                                new_list=g.search_history,
-                               key_num=g.key_num)
+                               key_num=g.key_num,total_num = total_num)
     except AttributeError:
         return redirect(url_for('home.login', code=0))
 
 
+# 用户个人中心界面
 @home.route('/user/<username>/userinfo', methods=["GET", "POST"])
 def userinfo(username):
     form = Userinfo()
@@ -254,7 +259,6 @@ def userinfo(username):
         # 接受发送来的表单数据
         if f:
             u.face = username + '.jpg'
-            print(u.face)
             # 将发送来的头像文件保存至static目录下的faces文件夹中
             f.save(os.path.join(UPLOAD_FOLDER, filename))
         db.session.commit()
@@ -285,6 +289,7 @@ def pwdchange(username):
     u = User.query.filter_by(name=username).first()
     if form.validate_on_submit():
         new_pwd = form.password1.data
+        # 直接保存密码内容，未做hash操作
         u.password = new_pwd
         db.session.commit()
         flash("修改成功!")
@@ -306,6 +311,7 @@ def favorite(username):
     goodnum_list = []
     danmaku_list = []
     secret_name = base64.b64encode(username.encode())
+    # 无收藏视频
     if Favorite.query.filter_by(user_id=id).first() is None:
         movie_num = 0
     else:
@@ -504,9 +510,9 @@ def create(username, id):
         tag = form.tag.data
         tag_id = TAG_LIST.index(tag) + 1
         video = form.video_file.data
-        v_num = video.query.all()
+        v_num = Video.query.all()
         id_list = [v.id for v in v_num]
-        new_id = numpy.max(id_list) + 1  # 新加入的视频的id
+        new_id = max(id_list) + 1  # 新加入的视频的id
         face_name = "None"
         # 用户有上传视频封面的情况
         if face is not None:
@@ -518,7 +524,7 @@ def create(username, id):
             new_video_url = "movie_" + str(new_id) + ".mp4"
             video.save(os.path.join(VIDEO_FOLDER, new_video_url))
         # 添加视频记录，点赞记录，收藏记录
-        add_v = Video(video_title=video_title, url=str(new_id), info=info, face=face_name, tag_id=tag_id,
+        add_v = Video(id = new_id,video_title=video_title, url=str(new_id), info=info, face=face_name, tag_id=tag_id,
                       Goodnum=0, danmaku=0)
         add_fav = Fav_records(id=new_id, video_id=new_id, fav_user_id="")
         add_zan = Zan_records(id=new_id, video_id=new_id, zan_user_id="")
